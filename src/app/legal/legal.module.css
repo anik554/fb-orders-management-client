@@ -1,0 +1,39 @@
+/*
+ * Shared typography for the public legal pages.
+ *
+ * These are the pages Meta's reviewers read, and they are the only screens a
+ * visitor sees without signing in — so they get plain, high-contrast prose
+ * rather than the dashboard's dense chrome.
+ */
+.prose h2 {
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.prose h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.prose p,
+.prose ul {
+  margin-bottom: 0.75rem;
+  line-height: 1.65;
+}
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.35rem;
+}
+
+.prose li {
+  margin-bottom: 0.35rem;
+}
+
+.prose strong {
+  font-weight: 600;
+}

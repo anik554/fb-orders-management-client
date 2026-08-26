@@ -1,0 +1,167 @@
+@import 'tailwindcss';
+
+/*
+ * Dark mode is driven by a class on <html>, not only by the OS setting, so the
+ * user can override it. The inline script in layout.tsx applies the stored
+ * choice before first paint.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic tokens rather than raw palette values.
+ *
+ * Components reference `surface`, `border`, `muted` and so on. Both themes then
+ * live in one place, and a component cannot accidentally be light-mode-only
+ * because someone reached for `bg-white` — which is exactly how the first pass
+ * of this UI ended up with a dark-mode variant bolted onto every element.
+ */
+@theme {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-content: var(--content);
+  --color-content-muted: var(--content-muted);
+  --color-content-faint: var(--content-faint);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-contrast: var(--brand-contrast);
+  --color-brand-soft: var(--brand-soft);
+  --color-positive: var(--positive);
+  --color-positive-soft: var(--positive-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 0.75rem;
+
+  --shadow-card: 0 1px 2px 0 rgb(16 24 40 / 0.04), 0 1px 3px 0 rgb(16 24 40 / 0.06);
+  --shadow-raised: 0 4px 12px -2px rgb(16 24 40 / 0.10), 0 2px 4px -2px rgb(16 24 40 / 0.06);
+}
+
+:root {
+  --canvas: #f6f7f9;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f1f2f4;
+
+  --border-subtle: #e6e8eb;
+  --border-strong: #d3d7dd;
+
+  --content: #14181f;
+  --content-muted: #5c6672;
+  --content-faint: #8b95a1;
+
+  /* Messenger blue: the product lives inside Facebook's world, and matching it
+     makes the "Continue with Facebook" step feel like part of the same flow. */
+  --brand: #1877f2;
+  --brand-hover: #1465d8;
+  --brand-contrast: #ffffff;
+  --brand-soft: #e8f1fe;
+
+  --positive: #0f7b4f;
+  --positive-soft: #e3f5eb;
+  --warning: #94620a;
+  --warning-soft: #fdf3d7;
+  --danger: #c22c30;
+  --danger-soft: #fdeaea;
+  --info: #2a5cb8;
+  --info-soft: #e9effb;
+
+  color-scheme: light;
+}
+
+.dark {
+  --canvas: #0c0f14;
+  --surface: #14181f;
+  --surface-raised: #1b2029;
+  --surface-sunken: #0f131a;
+
+  --border-subtle: #262c36;
+  --border-strong: #363e4a;
+
+  --content: #e8eaed;
+  --content-muted: #9aa4b1;
+  --content-faint: #6b7480;
+
+  --brand: #2d88ff;
+  --brand-hover: #4a99ff;
+  --brand-contrast: #08111f;
+  --brand-soft: #12253d;
+
+  --positive: #4ad395;
+  --positive-soft: #10281d;
+  --warning: #e9bd52;
+  --warning-soft: #2a2211;
+  --danger: #f4787c;
+  --danger-soft: #2d1416;
+  --info: #7aa8f5;
+  --info-soft: #13203a;
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--content);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Numbers in tables and money columns should not jitter as they change. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* One visible focus treatment everywhere, rather than the browser default in
+     some places and nothing in others. */
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 0.25rem;
+  }
+
+  ::selection {
+    background-color: var(--brand-soft);
+    color: var(--content);
+  }
+}
+
+/* Thin, theme-aware scrollbars: the inbox has three scrolling panes side by
+   side, and three chunky OS scrollbars dominate the layout. */
+@layer utilities {
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+
+  .scroll-slim::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .scroll-slim::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scroll-slim::-webkit-scrollbar-thumb {
+    background-color: var(--border-strong);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+}
