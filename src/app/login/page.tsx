@@ -1,5 +1,6 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
@@ -42,8 +43,27 @@ function LoginForm() {
   const [businessName, setBusinessName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  /**
+   * Whether new accounts are open, and whether they need a code.
+   *
+   * Asked before the form is shown so nobody fills in four fields only to be
+   * told the door is shut. It is a convenience, not the gate: the server decides,
+   * and `undefined` while it loads is treated as open so a slow request never
+   * hides a working signup form.
+   */
+  const policy = useQuery({
+    queryKey: ['signup-policy'],
+    queryFn: api.signupPolicy,
+    staleTime: 5 * 60_000,
+    retry: false,
+  });
+
+  const signupOpen = policy.data?.enabled ?? true;
+  const needsCode = policy.data?.requiresCode ?? false;
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -54,7 +74,13 @@ function LoginForm() {
       const tokens =
         mode === 'login'
           ? await api.login(email, password)
-          : await api.signup({ name, email, password, businessName });
+          : await api.signup({
+              name,
+              email,
+              password,
+              businessName,
+              ...(accessCode.trim() ? { accessCode: accessCode.trim() } : {}),
+            });
 
       tokenStore.save(tokens.accessToken, tokens.refreshToken);
 
@@ -93,6 +119,13 @@ function LoginForm() {
                 : 'Set up your shop, then connect a Facebook Page.'}
             </p>
 
+            {mode === 'signup' && !signupOpen ? (
+              <div className="mt-7">
+                <Notice tone="info" title="New accounts are closed right now">
+                  Get in touch and we will set one up for you.
+                </Notice>
+              </div>
+            ) : (
             <form onSubmit={submit} className="mt-7 space-y-3.5">
               {mode === 'signup' && (
                 <>
@@ -114,6 +147,21 @@ function LoginForm() {
                       placeholder="Dhaka Fashion House"
                     />
                   </Field>
+
+                  {needsCode && (
+                    <Field
+                      label="Signup code"
+                      hint="We sent this to you. Ask us if you do not have one."
+                    >
+                      <Input
+                        value={accessCode}
+                        onChange={(event) => setAccessCode(event.target.value)}
+                        required
+                        autoComplete="off"
+                        placeholder="Your invitation code"
+                      />
+                    </Field>
+                  )}
                 </>
               )}
 
@@ -158,6 +206,7 @@ function LoginForm() {
                 {mode === 'login' ? 'Sign in' : 'Create account'}
               </Button>
             </form>
+            )}
 
             <p className="mt-5 text-sm text-content-muted">
               {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}

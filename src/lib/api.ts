@@ -143,11 +143,20 @@ export const api = {
       body: { email, password },
     }),
 
-  signup: (input: { name: string; email: string; password: string; businessName: string }) =>
+  signup: (input: {
+    name: string;
+    email: string;
+    password: string;
+    businessName: string;
+    accessCode?: string;
+  }) =>
     request<{ accessToken: string; refreshToken: string }>('/auth/signup', {
       method: 'POST',
       body: input,
     }),
+
+  signupPolicy: () =>
+    request<{ enabled: boolean; requiresCode: boolean }>('/auth/signup-policy'),
 
   me: () => request<import('./types').MeResponse>('/auth/me'),
 
