@@ -67,7 +67,11 @@ export default function DashboardPage() {
     void queryClient.invalidateQueries({ queryKey: ['dashboard'] });
   }, [queryClient]);
 
-  const realtimeStatus = useRealtime({ onNewMessage: refresh, onOrderStatusUpdated: refresh });
+  const realtimeStatus = useRealtime({
+    onNewMessage: refresh,
+    onOrderStatusUpdated: refresh,
+    onRefresh: refresh,
+  });
 
   if (session.wrongRole) {
     return <WrongAccountNotice me={session.me} requiredRole={session.requiredRole} />;

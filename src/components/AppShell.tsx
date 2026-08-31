@@ -225,9 +225,14 @@ export function RealtimeIndicator({ status }: { status: RealtimeStatus }) {
   const tone =
     status === 'live'
       ? { dot: 'bg-positive', text: 'text-content-muted', label: 'Live' }
-      : status === 'connecting'
-        ? { dot: 'bg-warning animate-pulse', text: 'text-content-muted', label: 'Connecting' }
-        : { dot: 'bg-danger', text: 'text-danger', label: 'Offline' };
+      : status === 'polling'
+        ? // Not "Live". This backend cannot push, so a message can sit unseen
+          // for up to the poll interval — and an agent deciding whether to
+          // refresh needs to know which of the two they are looking at.
+          { dot: 'bg-info', text: 'text-content-muted', label: 'Checking' }
+        : status === 'connecting'
+          ? { dot: 'bg-warning animate-pulse', text: 'text-content-muted', label: 'Connecting' }
+          : { dot: 'bg-danger', text: 'text-danger', label: 'Offline' };
 
   return (
     <span
@@ -235,9 +240,11 @@ export function RealtimeIndicator({ status }: { status: RealtimeStatus }) {
       title={
         status === 'live'
           ? 'New messages arrive automatically'
-          : status === 'offline'
-            ? 'Not connected — new messages will not appear until this reconnects'
-            : 'Connecting…'
+          : status === 'polling'
+            ? 'Checking for new messages every 10 seconds — this server cannot push them'
+            : status === 'offline'
+              ? 'Not connected — new messages will not appear until this reconnects'
+              : 'Connecting…'
       }
     >
       <span aria-hidden className={cx('h-1.5 w-1.5 rounded-full', tone.dot)} />

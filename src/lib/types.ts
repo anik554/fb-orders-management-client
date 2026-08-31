@@ -29,6 +29,8 @@ export interface MeResponse extends AuthUser {
   pages: PageSummary[];
   /** Null for a platform admin, who has no business to subscribe. */
   subscription: SubscriptionSummary | null;
+  /** What this deployment can do. A serverless API must be polled. */
+  capabilities: { realtime: 'socket' | 'poll' };
 }
 
 export interface MessagingWindow {

@@ -49,7 +49,10 @@ export default function OrdersPage() {
     void queryClient.invalidateQueries({ queryKey: ['orders'] });
   }, [queryClient]);
 
-  const realtimeStatus = useRealtime({ onOrderStatusUpdated: handleOrderEvent });
+  const realtimeStatus = useRealtime({
+    onOrderStatusUpdated: handleOrderEvent,
+    onRefresh: handleOrderEvent,
+  });
 
   const changeStatus = useMutation({
     mutationFn: ({ id, status }: { id: string; status: OrderStatus }) =>
@@ -112,7 +115,7 @@ export default function OrdersPage() {
               </Select>
             </label>
 
-            <label className="min-w-[8rem]">
+            <label className="min-w-32">
               <span className="mb-1 block text-xs font-medium text-content-muted">Payment</span>
               <Select
                 value={filters.paymentMethod ?? ''}

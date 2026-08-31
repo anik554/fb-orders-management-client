@@ -67,9 +67,25 @@ export default function InboxPage() {
     void queryClient.invalidateQueries({ queryKey: ['orders'] });
   }, [queryClient]);
 
+  /**
+   * What to re-read when all we know is that time has passed.
+   *
+   * The pushed path uses the event to invalidate exactly one page's list and
+   * one thread. Polling has no event, so it invalidates what this screen is
+   * actually showing — which it knows from its own state.
+   */
+  const handlePoll = useCallback(() => {
+    void queryClient.invalidateQueries({ queryKey: ['conversations', pageId] });
+
+    if (conversationId) {
+      void queryClient.invalidateQueries({ queryKey: ['thread', conversationId] });
+    }
+  }, [queryClient, pageId, conversationId]);
+
   const realtimeStatus = useRealtime({
     onNewMessage: handleRealtime,
     onOrderStatusUpdated: handleOrderEvent,
+    onRefresh: handlePoll,
   });
 
   const reply = useMutation({
